@@ -1,5 +1,5 @@
 /*jslint browser: true*/
-(function (w, d) {
+(function (d) {
     'use strict';
 
     function initApplication() {
@@ -11,4 +11,4 @@
             initApplication();
         }
     };
-}(window, document));
+}(document));
