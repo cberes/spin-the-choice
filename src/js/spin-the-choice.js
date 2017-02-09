@@ -2,6 +2,30 @@
 (function (d) {
     'use strict';
 
+    function Display() {
+        var handlers = [];
+
+        this.register = function (id, valueFunc) {
+            this.registerCustom(id, function (element) {
+                element.textContent = valueFunc();
+            });
+        };
+
+        this.registerCustom = function (id, handler) {
+            handlers.push({
+                element: d.getElementById(id),
+                handler: handler
+            });
+        };
+
+        this.update = function () {
+            var i;
+            for (i = 0; i < handlers.length; i += 1) {
+                handlers[i].handler(handlers[i].element);
+            }
+        };
+    }
+
     function State() {
         var choicesMade = 0,
             choicesRemaining = 0,
@@ -133,9 +157,22 @@
         };
     }
 
+    function clearNodes(element) {
+        while (element.firstChild) {
+            element.removeChild(element.firstChild);
+        }
+    }
+
+    function createElementWithText(type, text) {
+        var element = d.createElement(type);
+        element.textContent = text;
+        return element;
+    }
+
     function initApplication() {
         var bank = new PointBank(0),
             bell = new Audio(''),
+            display = new Display(),
             state = new State(),
             spinOptions = [
                 new SpinOption('spin', 'Spin', function (state) {
@@ -184,7 +221,22 @@
                 new Prize('mercedes', 'Mercedes', 7500),
             ],
             game = new SpinTheChoice(spinOptions, prizeOptions, bank, state);
-        d.getElementById('main').textContent = 'Ready';
+
+        display.register('choices-made', state.getChoicesMade);
+        display.register('choices-remaining', state.getChoicesRemaining);
+        display.register('spins-made', state.getSpinsMade);
+        display.register('spins-remaining', state.getSpinsRemaining);
+        display.register('points-accrued', state.getPoints);
+        display.register('points-bank', bank.getPoints);
+        display.registerCustom('prizes-earned', function (element) {
+            var prizes = state.getPrizes(),
+                i;
+            clearNodes(element);
+            for (i = 0; i < prizes.length; i += 1) {
+                element.appendChild(createElementWithText('li', prizes[i].getName()));
+            }
+        });
+        display.update();
     }
 
     d.onreadystatechange = function () {
