@@ -1,4 +1,5 @@
 /*jslint browser: true*/
+/*global Audio: false*/
 (function (d) {
     'use strict';
 
@@ -171,7 +172,7 @@
 
     function initApplication() {
         var bank = new PointBank(0),
-            bell = new Audio(''),
+            bell = new Audio('assets/sound/bell.ogg'),
             display = new Display(),
             state = new State(),
             spinOptions = [
@@ -237,6 +238,10 @@
             }
         });
         display.update();
+        document.getElementById('prize-wheel').addEventListener('click', function (evt) {
+            bell.play();
+            evt.preventDefault();
+        });
     }
 
     d.onreadystatechange = function () {

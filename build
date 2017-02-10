@@ -35,6 +35,7 @@ build() {
 	zip $archive_name *.html
 	zip $archive_name css/*.min.css
 	zip $archive_name js/*.min.js
+	zip $archive_name assets/sound/*.*
 }
 
 clean
