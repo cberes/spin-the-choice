@@ -1,5 +1,5 @@
-*.min.css
-*.min.js
+/css/*.min.css
+/js/*.min.js
 *.zip
 node_modules/
 *.log

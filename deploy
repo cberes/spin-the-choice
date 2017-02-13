@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+readonly archive_name=archive
+
+deploy() {
+	mkdir $1/
+	rm -fr $1/*
+	unzip $archive_name -d $1
+}
+
+deploy docs/
