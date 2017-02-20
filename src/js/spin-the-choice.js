@@ -3,6 +3,15 @@
 (function (d) {
     'use strict';
 
+    var Choice = {
+        CHOICE: 'choice',
+        SPIN: 'spin',
+
+        values: function () {
+            return [this.CHOICE, this.SPIN];
+        }
+    };
+
     function Display() {
         var handlers = [];
 
@@ -28,12 +37,21 @@
     }
 
     function State() {
-        var choicesMade = 0,
+        var choice = null,
+            choicesMade = 0,
             choicesRemaining = 0,
             spinsMade = 0,
             spinsRemaining = 0,
             points = 0,
             prizes = [];
+
+        this.getChoice = function () {
+            return choice;
+        };
+
+        this.setChoice = function (nextChoice) {
+            choice = nextChoice;
+        };
 
         this.getChoicesMade = function () {
             return choicesMade;
@@ -170,18 +188,21 @@
         return element;
     }
 
+    function createChoiceSpinHandler(choice, points) {
+        return function (state) {
+            var multiplier = state.getChoice() === choice ? 1 : -1;
+            state.addPoints(multiplier * points);
+        };
+    }
+
     function initApplication() {
         var bank = new PointBank(0),
             bell = new Audio('assets/sound/bell.ogg'),
             display = new Display(),
             state = new State(),
             spinOptions = [
-                new SpinOption('spin', 'Spin', function (state) {
-                    // TODO
-                }),
-                new SpinOption('choice', 'Choice', function (state) {
-                    // TODO
-                }),
+                new SpinOption('spin', 'Spin', createChoiceSpinHandler(Choice.SPIN, 100)),
+                new SpinOption('choice', 'Choice', createChoiceSpinHandler(Choice.CHOICE, 100)),
                 new SpinOption('lose_spin', 'Lose a Spin', function (state) {
                     state.addSpin(-1);
                 }),
@@ -238,6 +259,14 @@
             }
         });
         display.update();
+        document.getElementById('choose').addEventListener('click', function (evt) {
+            state.setChoice(Choice.CHOICE);
+            evt.preventDefault();
+        });
+        document.getElementById('spin').addEventListener('click', function (evt) {
+            state.setChoice(Choice.SPIN);
+            evt.preventDefault();
+        });
         document.getElementById('prize-wheel').addEventListener('click', function (evt) {
             bell.play();
             evt.preventDefault();

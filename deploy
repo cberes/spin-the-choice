@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
+readonly domain=spinthechoice.com
 readonly archive_name=archive
 
 deploy() {
 	mkdir $1/
 	rm -fr $1/*
 	unzip $archive_name -d $1
+	echo -n $domain > "$1/CNAME"
 }
 
 deploy docs/
