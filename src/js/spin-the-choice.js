@@ -58,14 +58,25 @@
     }
 
     function State(initialChoicesRemaining, initialSpinsRemaining) {
-        var actionsAllowed = [GameAction.CHOICE, GameAction.SPIN],
-            choice = null,
-            choicesMade = 0,
-            choicesRemaining = initialChoicesRemaining || 0,
-            spinsMade = 0,
-            spinsRemaining = initialSpinsRemaining || 0,
-            points = 0,
+        var actionsAllowed,
+            choice,
+            choicesMade,
+            choicesRemaining,
+            spinsMade,
+            spinsRemaining,
+            points,
+            prizes;
+
+        this.reset = function () {
+            actionsAllowed = [GameAction.CHOICE, GameAction.SPIN];
+            choice = null;
+            choicesMade = 0;
+            choicesRemaining = initialChoicesRemaining || 0;
+            spinsMade = 0;
+            spinsRemaining = initialSpinsRemaining || 0;
+            points = 0;
             prizes = [];
+        };
 
         this.getActionsAllowed = function () {
             return actionsAllowed;
@@ -132,6 +143,8 @@
         this.addPrize = function (prize) {
             prizes.push(prize);
         };
+
+        this.reset();
     }
 
     function SpinOption(id, name, action, actionsAllowed) {
@@ -365,6 +378,9 @@
         display.registerCustom('prize-wheel', function (element) {
             element.disabled = state.getActionsAllowed().indexOf(GameAction.PRIZE) === -1;
         });
+        display.registerCustom('new-game', function (element) {
+            element.disabled = state.getActionsAllowed().length > 0;
+        });
 
         document.getElementById('choose').addEventListener('click', function (evt) {
             game.choose(function () {
@@ -382,6 +398,11 @@
             game.spinPrizeWheel(function () {
                 display.update();
             });
+            evt.preventDefault();
+        });
+        document.getElementById('new-game').addEventListener('click', function (evt) {
+            state.reset();
+            display.update();
             evt.preventDefault();
         });
 
