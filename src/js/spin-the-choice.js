@@ -4,13 +4,22 @@
     'use strict';
 
     var Choice = {
-        CHOICE: 'choice',
-        SPIN: 'spin',
+            CHOICE: 'choice',
+            SPIN: 'spin',
 
-        values: function () {
-            return [this.CHOICE, this.SPIN];
-        }
-    };
+            values: function () {
+                return [this.CHOICE, this.SPIN];
+            }
+        },
+        GameAction = {
+            CHOICE: Choice.CHOICE,
+            SPIN: Choice.SPIN,
+            PRIZE: 'prize',
+
+            values: function () {
+                return [this.CHOICE, this.SPIN, this.PRIZE];
+            }
+        };
 
     function randomInt(boundA, boundB) {
         var minInclusive, maxExclusive;
@@ -48,14 +57,23 @@
         };
     }
 
-    function State() {
-        var choice = null,
+    function State(initialChoicesRemaining, initialSpinsRemaining) {
+        var actionsAllowed = [GameAction.CHOICE, GameAction.SPIN],
+            choice = null,
             choicesMade = 0,
-            choicesRemaining = 0,
+            choicesRemaining = initialChoicesRemaining || 0,
             spinsMade = 0,
-            spinsRemaining = 0,
+            spinsRemaining = initialSpinsRemaining || 0,
             points = 0,
             prizes = [];
+
+        this.getActionsAllowed = function () {
+            return actionsAllowed;
+        };
+
+        this.setActionsAllowed = function (actions) {
+            actionsAllowed = actions;
+        };
 
         this.getChoice = function () {
             return choice;
@@ -116,7 +134,7 @@
         };
     }
 
-    function SpinOption(id, name, action) {
+    function SpinOption(id, name, action, actionsAllowed) {
         this.getId = function () {
             return id;
         };
@@ -127,6 +145,10 @@
 
         this.update = function (state) {
             action(state);
+        };
+
+        this.getActionsAllowed = function () {
+            return actionsAllowed;
         };
     }
 
@@ -192,23 +214,45 @@
         };
     }
 
-    function SpinTheChoice(gameWheel, prizeWheel, bank, state) {
-        function spinGameWheel() {
+    function SpinTheChoice(gameWheel, prizeWheel, bank, state, bankPointsPerTurn) {
+        function getActionsAllowed() {
+            var actions = [];
+            if (state.getChoicesRemaining() > 0) {
+                actions.push(GameAction.CHOICE);
+            }
+            if (state.getSpinsRemaining() > 0) {
+                actions.push(GameAction.SPIN);
+            }
+            return actions;
+        }
+
+        function spinGameWheel(callback) {
             gameWheel.spin(function (result) {
-                result.update();
+                result.update(state);
+                state.setActionsAllowed(result.getActionsAllowed() || getActionsAllowed());
+                bank.addPoints(bankPointsPerTurn || 1);
+                callback();
             });
         }
 
-        this.choose = function () {
+        this.choose = function (callback) {
             state.setChoice(Choice.CHOICE);
             state.redeemChoice();
-            spinGameWheel();
+            spinGameWheel(callback);
         };
 
-        this.spin = function () {
+        this.spin = function (callback) {
             state.setChoice(Choice.SPIN);
             state.redeemSpin();
-            spinGameWheel();
+            spinGameWheel(callback);
+        };
+
+        this.spinPrizeWheel = function (callback) {
+            prizeWheel.spin(function (result) {
+                result.update(state);
+                state.setActionsAllowed(getActionsAllowed());
+                callback();
+            });
         };
     }
 
@@ -231,11 +275,18 @@
         };
     }
 
+    function createWheelResultSupplier(wheel) {
+        return function () {
+            var result = wheel.getResult();
+            return (result && result.getName()) || '';
+        };
+    }
+
     function initApplication() {
         var bank = new PointBank(0),
             bell = new Audio('assets/sound/bell.ogg'),
             display = new Display(),
-            state = new State(),
+            state = new State(3, 3),
             spinOptions = [
                 new SpinOption('spin', 'Spin', createChoiceSpinHandler(Choice.SPIN, 100)),
                 new SpinOption('choice', 'Choice', createChoiceSpinHandler(Choice.CHOICE, 100)),
@@ -243,14 +294,11 @@
                     state.addSpin(-1);
                 }),
                 new SpinOption('spin_again', 'Spin Again', function (state) {
-                    // TODO like Free Spin? But forced to spin on the next turn?
-                    // TODO does this affect the spin totals?
                     state.addSpin();
-                }),
-                new SpinOption('prize', 'Prize Winner', function (state) {
-                    // TODO spin prize wheel
+                }, [GameAction.SPIN]),
+                new SpinOption('prize', 'Prize Wheel', function () {
                     bell.play();
-                }),
+                }, [GameAction.PRIZE]),
                 new SpinOption('free_spin', 'Free Spin', function (state) {
                     state.addSpin();
                 }),
@@ -280,7 +328,7 @@
             ],
             gameWheel = new Wheel(spinOptions),
             prizeWheel = new Wheel(prizeOptions),
-            game = new SpinTheChoice(gameWheel, prizeWheel, bank, state);
+            game = new SpinTheChoice(gameWheel, prizeWheel, bank, state, 10);
 
         display.register('choices-made', state.getChoicesMade);
         display.register('choices-remaining', state.getChoicesRemaining);
@@ -288,8 +336,8 @@
         display.register('spins-remaining', state.getSpinsRemaining);
         display.register('points-accrued', state.getPoints);
         display.register('points-bank', bank.getPoints);
-        display.register('wheel-outcome', gameWheel.getResult);
-        display.register('prize-outcome', prizeWheel.getResult);
+        display.register('wheel-outcome', createWheelResultSupplier(gameWheel));
+        display.register('prize-outcome', createWheelResultSupplier(prizeWheel));
         display.registerCustom('prizes-earned', function (element) {
             var prizes = state.getPrizes(),
                 i;
@@ -298,21 +346,36 @@
                 element.appendChild(createElementWithText('li', prizes[i].getName()));
             }
         });
-        display.update();
+        display.registerCustom('choose', function (element) {
+            element.disabled = state.getActionsAllowed().indexOf(GameAction.CHOICE) === -1;
+        });
+        display.registerCustom('spin', function (element) {
+            element.disabled = state.getActionsAllowed().indexOf(GameAction.SPIN) === -1;
+        });
+        display.registerCustom('prize-wheel', function (element) {
+            element.disabled = state.getActionsAllowed().indexOf(GameAction.PRIZE) === -1;
+        });
+
         document.getElementById('choose').addEventListener('click', function (evt) {
-            game.choose();
-            display.update();
+            game.choose(function () {
+                display.update();
+            });
             evt.preventDefault();
         });
         document.getElementById('spin').addEventListener('click', function (evt) {
-            game.spin();
-            display.update();
+            game.spin(function () {
+                display.update();
+            });
             evt.preventDefault();
         });
         document.getElementById('prize-wheel').addEventListener('click', function (evt) {
-            bell.play();
+            game.spinPrizeWheel(function () {
+                display.update();
+            });
             evt.preventDefault();
         });
+
+        display.update();
     }
 
     d.onreadystatechange = function () {
