@@ -12,6 +12,18 @@
         }
     };
 
+    function randomInt(boundA, boundB) {
+        var minInclusive, maxExclusive;
+        if (boundB === undefined) {
+            maxExclusive = boundA;
+            minInclusive = 0;
+        } else {
+            maxExclusive = boundB;
+            minInclusive = boundA;
+        }
+        return Math.floor(Math.random() * maxExclusive) + minInclusive;
+    }
+
     function Display() {
         var handlers = [];
 
@@ -166,13 +178,37 @@
         };
     }
 
-    function SpinTheChoice(spinOptions, prizeOptions, bank, state) {
+    function Wheel(options) {
+        var result = null;
+
+        this.getResult = function () {
+            return result;
+        };
+
+        this.spin = function (callback) {
+            var index = randomInt(options.length);
+            result = options[index];
+            callback(result);
+        };
+    }
+
+    function SpinTheChoice(gameWheel, prizeWheel, bank, state) {
+        function spinGameWheel() {
+            gameWheel.spin(function (result) {
+                result.update();
+            });
+        }
+
         this.choose = function () {
+            state.setChoice(Choice.CHOICE);
             state.redeemChoice();
+            spinGameWheel();
         };
 
         this.spin = function () {
+            state.setChoice(Choice.SPIN);
             state.redeemSpin();
+            spinGameWheel();
         };
     }
 
@@ -242,7 +278,9 @@
                 }),
                 new Prize('mercedes', 'Mercedes', 7500),
             ],
-            game = new SpinTheChoice(spinOptions, prizeOptions, bank, state);
+            gameWheel = new Wheel(spinOptions),
+            prizeWheel = new Wheel(prizeOptions),
+            game = new SpinTheChoice(gameWheel, prizeWheel, bank, state);
 
         display.register('choices-made', state.getChoicesMade);
         display.register('choices-remaining', state.getChoicesRemaining);
@@ -250,6 +288,8 @@
         display.register('spins-remaining', state.getSpinsRemaining);
         display.register('points-accrued', state.getPoints);
         display.register('points-bank', bank.getPoints);
+        display.register('wheel-outcome', gameWheel.getResult);
+        display.register('prize-outcome', prizeWheel.getResult);
         display.registerCustom('prizes-earned', function (element) {
             var prizes = state.getPrizes(),
                 i;
@@ -260,11 +300,13 @@
         });
         display.update();
         document.getElementById('choose').addEventListener('click', function (evt) {
-            state.setChoice(Choice.CHOICE);
+            game.choose();
+            display.update();
             evt.preventDefault();
         });
         document.getElementById('spin').addEventListener('click', function (evt) {
-            state.setChoice(Choice.SPIN);
+            game.spin();
+            display.update();
             evt.preventDefault();
         });
         document.getElementById('prize-wheel').addEventListener('click', function (evt) {
