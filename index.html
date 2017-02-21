@@ -1,41 +1,95 @@
 <!doctype html>
 <html>
     <head>
-    <title>Spin the Choice</title>
-    <meta charset="utf-8"/>
-    <link href="css/main.min.css" rel="stylesheet" type="text/css"> 
-    <script src="js/spin-the-choice.min.js"></script>
+        <title>Spin the Choice</title>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+        <link href="css/main.min.css" rel="stylesheet" type="text/css"> 
+        <script src="js/spin-the-choice.min.js"></script>
     </head>
-    <body>
-        <h1>Spin the Choice</h1>
-        <p>
-            Do you want to spin the choice?
-        </p>
-        <p>
-            The game is pretty straightforward.
-            You can choose to spin or you can choose to choose.
-            If you choose to spin, you can land on spin, or choice, or lose a spin, or lose a choice, or free spin, or free choice, or spin again.
-            Read the <a href="rules.html">rulebook</a>.
-        </p>
-        <ul>
-            <li>Choices made: <span id="choices-made"></span></li>
-            <li>Choices remaining: <span id="choices-remaining"></span></li>
-            <li>Spins made: <span id="spins-made"></span></li>
-            <li>Spins remaining: <span id="spins-remaining"></span></li>
-            <li>Points: <span id="points-accrued"></span></li>
-            <li>Bank: <span id="points-bank"></span></li>
-            <li>Prizes earned: <ul id="prizes-earned"></ul></li>
-        </ul>
-        <div>
-            Wheel: <span id="wheel-outcome"></span>
-        </div>
-        <div>
-            Prize Wheel: <span id="prize-outcome"></span>
-        </div>
-        <div>
-            <button id="spin">Spin</button>
-            <button id="choose">Choose</button>
-            <button id="prize-wheel">Prize Wheel</button>
-        </div>
+    <body class="container">
+        <header class="header clearfix">
+            <nav>
+                <ul class="nav nav-pills float-right">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="rules.html">Rulebook</a>
+                    </li>
+                </ul>
+                <h3 class="text-muted">Spin the Choice</h3>
+            </nav>
+        </header>
+        <section class="intro jumbotron">
+            <h1>Spin the Choice</h1>
+            <p>
+                Do you want to spin the choice?
+            </p>
+            <p>
+                The game is pretty straightforward.
+                You can choose to spin or you can choose to choose.
+                If you choose to spin, you can land on spin, or choice, or lose a spin, or lose a choice, or free spin, or free choice, or spin again.
+            </p>
+            <p>
+                <a class="btn btn-lg btn-success" href="rules.html" role="button">Read the rulebook</a>
+            </p>
+        </section>
+        <section id="main" class="row">
+            <div class="col-12 col-md-4">
+                <button id="spin" class="btn btn-lg btn-primary btn-block">Spin</button>
+            </div>
+            <div class="col-12 col-md-4">
+                <button id="choose" class="btn btn-lg btn-primary btn-block">Choose</button>
+            </div>
+            <div class="col-12 col-md-4">
+                <button id="prize-wheel" class="btn btn-lg btn-primary btn-block">Prize Wheel</button>
+            </div>
+        </section>
+        <section id="wheels" class="row">
+            <div class="col-12 col-md-4 align-self-center text-center">
+                <h4 id="wheel-outcome"></h4>
+                <span class="text-muted">Game wheel</span>
+            </div>
+            <div class="col-12 col-md-4 align-self-center text-center">
+                <h4 id="prize-outcome"></h4>
+                <span class="text-muted">Prize wheel</span>
+            </div>
+            <div class="col-12 col-md-4 align-self-center card">
+                <div class="card-block">
+                    <h4 class="card-title">Prizes earned</h4>
+                </div>
+                <ul id="prizes-earned" class="list-group list-group-flush"></ul>
+            </div>
+        </section>
+        <section id="state" class="row text-center">
+            <div class="col-6 col-sm-4 col-md-2">
+                <h4 id="points-accrued"></h4>
+                <div class="text-muted">Total score</div>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+                <h4 id="choices-remaining"></h4>
+                <div class="text-muted">Choices remaining</div>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+                <h4 id="spins-remaining"></h4>
+                <span class="text-muted">Spins remaining</span>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+                <h4 id="points-bank"></h4>
+                <span class="text-muted">Points in bank</span>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+                <h4 id="choices-made"></h4>
+                <span class="text-muted">Choices made</span>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+                <h4 id="spins-made"></h4>
+                <span class="text-muted">Spins made</span>
+            </div>
+        </section>
+        <footer class="footer text-muted">
+            <p>Follow our progress on <a href="https://github.com/cberes/spin-the-choice">GitHub</a>.</p>
+        </footer>
     </body>
 </html>

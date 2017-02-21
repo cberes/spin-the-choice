@@ -201,7 +201,8 @@
     }
 
     function Wheel(options) {
-        var result = null;
+        // start with the first option selected (a wheel always has something selected)
+        var result = options[0];
 
         this.getResult = function () {
             return result;
@@ -340,10 +341,19 @@
         display.register('prize-outcome', createWheelResultSupplier(prizeWheel));
         display.registerCustom('prizes-earned', function (element) {
             var prizes = state.getPrizes(),
+                item,
                 i;
             clearNodes(element);
-            for (i = 0; i < prizes.length; i += 1) {
-                element.appendChild(createElementWithText('li', prizes[i].getName()));
+            if (prizes.length) {
+                for (i = 0; i < prizes.length; i += 1) {
+                    item = createElementWithText('li', prizes[i].getName());
+                    item.className = 'list-group-item';
+                    element.appendChild(item);
+                }
+            } else {
+                item = createElementWithText('li', 'None');
+                item.className = 'list-group-item placeholder';
+                element.appendChild(item);
             }
         });
         display.registerCustom('choose', function (element) {
