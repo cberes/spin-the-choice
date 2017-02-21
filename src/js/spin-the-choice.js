@@ -405,6 +405,10 @@
             display.update();
             evt.preventDefault();
         });
+        document.getElementById('close-intro').addEventListener('click', function (evt) {
+            document.getElementById('intro').hidden = true;
+            evt.preventDefault();
+        });
 
         display.update();
     }

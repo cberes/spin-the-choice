@@ -2,14 +2,18 @@ body {
 }
 header {
 	padding-top: 1rem;
+	padding-bottom: 1rem;
 	margin-bottom: 1rem;
+	border-bottom: thin solid lightgrey;
 }
 section {
 	margin-bottom: 1rem;
 }
 footer {
 	margin-top: 1rem;
+	padding-top: 1rem;
 	padding-bottom: 1rem;
+	border-top: thin solid lightgrey;
 }
 #main > div, #wheels > div {
 	margin-bottom: 1rem;
