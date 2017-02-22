@@ -148,6 +148,14 @@
             prizes.push(prize);
         };
 
+        this.getTotalScore = function () {
+            return points + prizes.map(function (prize) {
+                return prize.getPoints();
+            }).reduce(function (acc, val) {
+                return acc + val;
+            }, 0);
+        };
+
         this.reset();
     }
 
@@ -393,7 +401,7 @@
         display.register('choices-remaining', state.getChoicesRemaining);
         display.register('spins-made', state.getSpinsMade);
         display.register('spins-remaining', state.getSpinsRemaining);
-        display.register('points-accrued', state.getPoints);
+        display.register('points-accrued', state.getTotalScore);
         display.register('points-bank', bank.getPoints);
         display.register('wheel-outcome', createWheelResultSupplier(gameWheel));
         display.register('prize-outcome', createWheelResultSupplier(prizeWheel));
