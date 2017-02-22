@@ -269,7 +269,7 @@
     }
 
     function SpinTheChoice(gameWheel, prizeWheel, bank, state, bankPointsPerTurn) {
-        function getActionsAllowed() {
+        function getDefaultActionsAllowed() {
             var actions = [];
             if (state.getChoicesRemaining() > 0) {
                 actions.push(GameAction.CHOICE);
@@ -283,12 +283,23 @@
             return actions;
         }
 
+        function getResultingActionsAllowed(result) {
+            var actionsAllowed = result.getActionsAllowed();
+            if (actionsAllowed === undefined) {
+                return getDefaultActionsAllowed();
+            }
+            if (typeof actionsAllowed === 'function') {
+                return actionsAllowed(state);
+            }
+            return actionsAllowed;
+        }
+
         function spinGameWheel(preCallback, postCallback) {
             state.setActionsAllowed([]);
             preCallback();
             gameWheel.spin(function (result) {
                 result.update(state);
-                state.setActionsAllowed(result.getActionsAllowed() || getActionsAllowed());
+                state.setActionsAllowed(getResultingActionsAllowed(result));
                 bank.addPoints(bankPointsPerTurn || 1);
                 postCallback();
             });
@@ -311,7 +322,7 @@
             preCallback();
             prizeWheel.spin(function (result) {
                 result.update(state);
-                state.setActionsAllowed(getActionsAllowed());
+                state.setActionsAllowed(getDefaultActionsAllowed());
                 postCallback();
             });
         };
@@ -364,8 +375,14 @@
                     state.addSpin(-1);
                 }),
                 new SpinOption('spin_again', 'Spin Again', function (state) {
-                    state.addSpin();
-                }, [GameAction.SPIN]),
+                    if (state.getChoice() === Choice.CHOICE) {
+                        state.addChoice();
+                    } else {
+                        state.addSpin();
+                    }
+                }, function (state) {
+                    return [state.getChoice()];
+                }),
                 new SpinOption('prize', 'Prize Wheel', function () {
                     bell.play();
                 }, [GameAction.PRIZE_WHEEL]),
