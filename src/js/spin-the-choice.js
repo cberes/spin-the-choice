@@ -104,7 +104,7 @@
 
         this.redeemChoice = function () {
             choicesMade += 1;
-            choicesRemaining -= 1;
+            this.addChoice(-1);
         };
 
         this.getChoicesRemaining = function () {
@@ -113,6 +113,9 @@
 
         this.addChoice = function (delta) {
             choicesRemaining += (delta || 1);
+            if (choicesRemaining < 0) {
+                choicesRemaining = 0;
+            }
         };
 
         this.getSpinsMade = function () {
@@ -121,7 +124,7 @@
 
         this.redeemSpin = function () {
             spinsMade += 1;
-            spinsRemaining -= 1;
+            this.addSpin(-1);
         };
 
         this.getSpinsRemaining = function () {
@@ -130,6 +133,9 @@
 
         this.addSpin = function (delta) {
             spinsRemaining += (delta || 1);
+            if (spinsRemaining < 0) {
+                spinsRemaining = 0;
+            }
         };
 
         this.getPoints = function () {
@@ -149,11 +155,11 @@
         };
 
         this.getTotalScore = function () {
-            return points + prizes.map(function (prize) {
+            return prizes.map(function (prize) {
                 return prize.getPoints();
             }).reduce(function (acc, val) {
                 return acc + val;
-            }, 0);
+            }, points);
         };
 
         this.reset();
@@ -229,26 +235,26 @@
         // start with the first option selected (a wheel always has something selected)
         var index = 0;
 
-        function getAnimationDelayInMillis(spinsRemaining) {
-            if (spinsRemaining > 15) {
+        function getAnimationDelayInMillis(itersRemaining) {
+            if (itersRemaining > 15) {
                 return 50;
             }
-            if (spinsRemaining > 5) {
+            if (itersRemaining > 5) {
                 return 100;
             }
-            if (spinsRemaining > 1) {
+            if (itersRemaining > 1) {
                 return 250;
             }
             return 500;
         }
 
-        function animateSpin(spins, callback) {
+        function animateSpin(iters, callback) {
             index = (index + 1) % options.length;
-            if (spins === 0) {
+            if (iters === 0) {
                 callback(options[index]);
             } else {
                 animationCallback();
-                setTimeout(animateSpin, getAnimationDelayInMillis(spins), spins - 1, callback);
+                setTimeout(animateSpin, getAnimationDelayInMillis(iters), iters - 1, callback);
             }
         }
 
@@ -257,7 +263,8 @@
         };
 
         this.spin = function (callback) {
-            animateSpin(4 * options.length + randomInt(options.length), callback);
+            var iters = 4 * options.length + randomInt(options.length);
+            animateSpin(iters, callback);
         };
     }
 
