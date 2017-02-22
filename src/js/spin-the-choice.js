@@ -45,16 +45,19 @@
 
         this.registerCustom = function (id, handler) {
             handlers.push({
+                id: id,
                 element: d.getElementById(id),
                 handler: handler
             });
         };
 
-        this.update = function () {
-            var i;
-            for (i = 0; i < handlers.length; i += 1) {
-                handlers[i].handler(handlers[i].element);
-            }
+        this.update = function (ids) {
+            var handlersToInvoke = ids === undefined ? handlers : handlers.filter(function (handler) {
+                return ids.indexOf(handler.id) !== -1;
+            });
+            handlersToInvoke.forEach(function (handler) {
+                handler.handler(handler.element);
+            });
         };
     }
 
@@ -244,34 +247,36 @@
             return actions;
         }
 
-        function spinGameWheel(callback) {
+        function spinGameWheel(preCallback, postCallback) {
             state.setActionsAllowed([]);
+            preCallback();
             gameWheel.spin(function (result) {
                 result.update(state);
                 state.setActionsAllowed(result.getActionsAllowed() || getActionsAllowed());
                 bank.addPoints(bankPointsPerTurn || 1);
-                callback();
+                postCallback();
             });
         }
 
-        this.choose = function (callback) {
+        this.choose = function (preCallback, postCallback) {
             state.setChoice(Choice.CHOICE);
             state.redeemChoice();
-            spinGameWheel(callback);
+            spinGameWheel(preCallback, postCallback);
         };
 
-        this.spin = function (callback) {
+        this.spin = function (preCallback, postCallback) {
             state.setChoice(Choice.SPIN);
             state.redeemSpin();
-            spinGameWheel(callback);
+            spinGameWheel(preCallback, postCallback);
         };
 
-        this.spinPrizeWheel = function (callback) {
+        this.spinPrizeWheel = function (preCallback, postCallback) {
             state.setActionsAllowed([]);
+            preCallback();
             prizeWheel.spin(function (result) {
                 result.update(state);
                 state.setActionsAllowed(getActionsAllowed());
-                callback();
+                postCallback();
             });
         };
     }
@@ -312,6 +317,9 @@
         var bank = new PointBank(0),
             bell = new Audio('assets/sound/bell.ogg'),
             display = new Display(),
+            buttonUpdate = function () {
+                display.update(['choose', 'spin', 'prize-wheel', 'new-game']);
+            },
             state = new State(3, 3),
             spinOptions = [
                 new SpinOption('spin', 'Spin', createChoiceSpinHandler(Choice.SPIN, 100)),
@@ -352,8 +360,12 @@
                 }),
                 new Prize('mercedes', 'Mercedes', 7500),
             ],
-            gameWheel = new Wheel(spinOptions),
-            prizeWheel = new Wheel(prizeOptions),
+            gameWheel = new Wheel(spinOptions, function () {
+                display.update(['wheel-outcome']);
+            }),
+            prizeWheel = new Wheel(prizeOptions, function () {
+                display.update(['prize-outcome']);
+            }),
             game = new SpinTheChoice(gameWheel, prizeWheel, bank, state, 10);
 
         display.register('choices-made', state.getChoicesMade);
@@ -387,21 +399,15 @@
         display.registerCustom('new-game', createGameActionHandler(state, GameAction.GAME_OVER));
 
         document.getElementById('choose').addEventListener('click', function (evt) {
-            game.choose(function () {
-                display.update();
-            });
+            game.choose(buttonUpdate, display.update);
             evt.preventDefault();
         });
         document.getElementById('spin').addEventListener('click', function (evt) {
-            game.spin(function () {
-                display.update();
-            });
+            game.spin(buttonUpdate, display.update);
             evt.preventDefault();
         });
         document.getElementById('prize-wheel').addEventListener('click', function (evt) {
-            game.spinPrizeWheel(function () {
-                display.update();
-            });
+            game.spinPrizeWheel(buttonUpdate, display.update);
             evt.preventDefault();
         });
         document.getElementById('new-game').addEventListener('click', function (evt) {
