@@ -217,18 +217,39 @@
         };
     }
 
-    function Wheel(options) {
+    function Wheel(options, animationCallback) {
         // start with the first option selected (a wheel always has something selected)
-        var result = options[0];
+        var index = 0;
+
+        function getAnimationDelayInMillis(spinsRemaining) {
+            if (spinsRemaining > 15) {
+                return 50;
+            }
+            if (spinsRemaining > 5) {
+                return 100;
+            }
+            if (spinsRemaining > 1) {
+                return 250;
+            }
+            return 500;
+        }
+
+        function animateSpin(spins, callback) {
+            index = (index + 1) % options.length;
+            if (spins === 0) {
+                callback(options[index]);
+            } else {
+                animationCallback();
+                setTimeout(animateSpin, getAnimationDelayInMillis(spins), spins - 1, callback);
+            }
+        }
 
         this.getResult = function () {
-            return result;
+            return options[index];
         };
 
         this.spin = function (callback) {
-            var index = randomInt(options.length);
-            result = options[index];
-            callback(result);
+            animateSpin(4 * options.length + randomInt(options.length), callback);
         };
     }
 
