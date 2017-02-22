@@ -14,10 +14,11 @@
         GameAction = {
             CHOICE: Choice.CHOICE,
             SPIN: Choice.SPIN,
-            PRIZE: 'prize',
+            PRIZE_WHEEL: 'prize_wheel',
+            GAME_OVER: 'game_over',
 
             values: function () {
-                return [this.CHOICE, this.SPIN, this.PRIZE];
+                return [this.CHOICE, this.SPIN, this.PRIZE_WHEEL, this.GAME_OVER];
             }
         };
 
@@ -237,10 +238,14 @@
             if (state.getSpinsRemaining() > 0) {
                 actions.push(GameAction.SPIN);
             }
+            if (actions.length === 0) {
+                actions.push(GameAction.GAME_OVER);
+            }
             return actions;
         }
 
         function spinGameWheel(callback) {
+            state.setActionsAllowed([]);
             gameWheel.spin(function (result) {
                 result.update(state);
                 state.setActionsAllowed(result.getActionsAllowed() || getActionsAllowed());
@@ -262,6 +267,7 @@
         };
 
         this.spinPrizeWheel = function (callback) {
+            state.setActionsAllowed([]);
             prizeWheel.spin(function (result) {
                 result.update(state);
                 state.setActionsAllowed(getActionsAllowed());
@@ -296,6 +302,12 @@
         };
     }
 
+    function createGameActionHandler(state, action) {
+        return function (element) {
+            element.disabled = state.getActionsAllowed().indexOf(action) === -1;
+        };
+    }
+
     function initApplication() {
         var bank = new PointBank(0),
             bell = new Audio('assets/sound/bell.ogg'),
@@ -312,7 +324,7 @@
                 }, [GameAction.SPIN]),
                 new SpinOption('prize', 'Prize Wheel', function () {
                     bell.play();
-                }, [GameAction.PRIZE]),
+                }, [GameAction.PRIZE_WHEEL]),
                 new SpinOption('free_spin', 'Free Spin', function (state) {
                     state.addSpin();
                 }),
@@ -369,18 +381,10 @@
                 element.appendChild(item);
             }
         });
-        display.registerCustom('choose', function (element) {
-            element.disabled = state.getActionsAllowed().indexOf(GameAction.CHOICE) === -1;
-        });
-        display.registerCustom('spin', function (element) {
-            element.disabled = state.getActionsAllowed().indexOf(GameAction.SPIN) === -1;
-        });
-        display.registerCustom('prize-wheel', function (element) {
-            element.disabled = state.getActionsAllowed().indexOf(GameAction.PRIZE) === -1;
-        });
-        display.registerCustom('new-game', function (element) {
-            element.disabled = state.getActionsAllowed().length > 0;
-        });
+        display.registerCustom('choose', createGameActionHandler(state, GameAction.CHOICE));
+        display.registerCustom('spin', createGameActionHandler(state, GameAction.SPIN));
+        display.registerCustom('prize-wheel', createGameActionHandler(state, GameAction.PRIZE_WHEEL));
+        display.registerCustom('new-game', createGameActionHandler(state, GameAction.GAME_OVER));
 
         document.getElementById('choose').addEventListener('click', function (evt) {
             game.choose(function () {
