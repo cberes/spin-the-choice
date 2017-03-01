@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Spin the Choice</title>
+        <meta charset="utf-8"/>
+        <meta property="og:title" content="Spin the Choice"/>
+        <meta property="og:type" content="website"/>
+        <meta property="og:url" content="http://spinthechoice.com/rules.html"/>
+        <meta property="og:image" content="http://spinthechoice.com/assets/image/preview.png"/>
+        <meta property="og:description" content="You take that choice, and you spin it. The name of the game is Spin the Choice! Play the game first invented in 2000 by Peggy Hill of Arlen, Texas."/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+        <link href="css/main.min.css" rel="stylesheet" type="text/css"> 
+    </head>
+    <body class="container">
+        <header class="header clearfix">
+            <nav>
+                <ul class="nav nav-pills float-right">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Rulebook <span class="sr-only">(current)</span></a>
+                    </li>
+                </ul>
+                <h4 class="text-muted">Spin the Choice</h4>
+            </nav>
+        </header>
+        <section id="rules">
+            <h1>Rulebook</h1>
+            <ol id="toc">
+                <li><a href="#peggy">Peggy Hill</a></li>
+                <li><a href="#objective">Objective</a></li>
+                <li><a href="#turn">Turn</a></li>
+                <li><a href="#game-wheel">Game wheel</a></li>
+                <li><a href="#prize-wheel">Prize wheel</a></li>
+            </ol>
+            <h2 id="peggy">Peggy Hill</h2>
+            <p>
+                Somes games let you spin a wheel. Some games give you a choice. You take that choice, and you spin it. The name of the game is Spin the Choice!
+            </p>
+            <p>
+                The game is pretty straightforward.
+                You can choose to spin or you can choose to choose.
+                If you choose to spin, you can land on:
+            </p>    
+            <ul>
+                <li>Spin</li>
+                <li>Choice</li>
+                <li>Lose a spin</li>
+                <li>Lose a choice</li>
+                <li>Free spin</li>
+                <li>Free choice</li>
+                <li>Spin again</li>
+                <li>Prize wheel</li>
+            </ul>
+            <p>
+                These are the possible outcomes on the game wheel.
+            </p>
+            <p>
+                There is also a prize wheel. You can spin the prize wheel when you land on <strong>Prize wheel</strong> on the game wheel.
+                The prize wheel contains these outcomes:
+            </p>
+            <ul>
+                <li>Free spin</li>
+                <li>Winnebago</li>
+                <li>Free choice</li>
+                <li>Washer dryer</li>
+                <li>Mazda</li>
+                <li>Microwave oven</li>
+                <li>Point bank</li>
+                <li>Mercedes</li>
+            </ul>
+            <p>
+                That's about everything that we know of <em>Spin the Choice</em> according to Peggy Hill. (We also know you can lose.)
+                We have had to make up some rules to fill in the holes.
+                If you disagree with a rule or you have a suggestion, <a href="https://github.com/cberes/spin-the-choice/issues/new">open an issue</a> on GitHub.
+            </p>
+        </section>
+        <section id="turns">
+            <h2 id="objective">Objective</h2>
+            <p>
+                The objective is to score as many points as possible.
+                You begin the game with 3 choices and 3 spins.
+                The game ends when, at the conclusion of a turn, you have no spins remaining and choices remaining.
+            </p>
+            <h2 id="turn">Turn</h2>
+            <p>
+                At the beginning of a turn, you make a choice: to spin or to choose.
+                You may choose to spin only if you have at least 1 spin remaining.
+                You may choose to choose only if you have at least 1 choice remaining.
+            </p>
+            <p>
+                Following your choice, you must spin the game wheel.
+                If you chose to spin, then deduct 1 spin from your spins remaining.
+                If you chose to choose, then deduct 1 choice from your choices remaining.
+                At this point, the turn has ended unless you landed on <strong>Prize wheel</strong>.
+                If you landed on <strong>Prize wheel</strong>, then you must spin the prize wheel.
+                After spinning the prize wheel, your turn has ended.
+            </p>
+        </section>
+        <section id="spinning">
+            <h2 id="game-wheel">Game wheel</h2>
+            <p>
+                You must spin the game wheel after making your choice.
+                Each outcome on the game wheel has unique consequences.
+            </p>
+            <h4>Spin</h4>
+            <p>
+                If you land on Spin after choosing <strong>Spin</strong>, then you earn 100 points.
+                If you land on Spin after choosing <strong>Choice</strong>, then you lose 100 points.
+            </p>
+            <h4>Choice</h4>
+            <p>
+                If you land on Choice after choosing <strong>Choice</strong>, then you earn 100 points.
+                If you land on Choice after choosing <strong>Spin</strong>, then you lose 100 points.
+            </p>
+            <h4>Lose a spin</h4>
+            <p>
+                You lose 1 spin. You cannot have fewer than zero spins remaining.
+            </p>
+            <h4>Lose a choice</h4>
+            <p>
+                You lose 1 choice. You cannot have fewer than zero choices remaining.
+            </p>
+            <h4>Free spin</h4>
+            <p>
+                You gain 1 spin.
+            </p>
+            <h4>Free choice</h4>
+            <p>
+                You gain 1 choice.
+            </p>
+            <h4>Spin again</h4>
+            <p>
+                If you chose <strong>Choice</strong>, then you gain 1 choice.
+                If you chose <strong>Spin</strong>, then you gain 1 spin.
+                You must use this spin or choice immediately.
+            </p>
+            <h4>Prize wheel</h4>
+            <p>
+                You must spin the prize wheel. A cow bell sounds.
+            </p>
+        </section>
+        <section id="prizes">
+            <h2 id="prize-wheel">Prize wheel</h2>
+            <p>
+                You must spin the prize wheel after landing on <strong>Prize wheel</strong> on the game wheel.
+                There are eight possible outcomes. Most of the outcomes award you a prize. (Note: no outcome awards you a <em>real</em> prize.)
+                These such prizes have a corresponding value in points.
+                The exceptions to this type of prize are described below.
+            </p>
+            <h4>Free spin</h4>
+            <p>
+                You gain 1 spin.
+            </p>
+            <h4>Free choice</h4>
+            <p>
+                You gain 1 choice.
+            </p>
+            <h4>Point bank</h4>
+            <p>
+                The amount of points in the point bank is added to your point total. Then, the point bank is reset to zero.
+                After every spin of the game wheel, 10 points are added to the bank. The point bank does not reset at the end of the game.
+                (But the bank will reset if you close your browser or refresh the page.)
+            </p>
+        </section>
+        <footer class="footer text-muted text-center">
+            <p>
+                <em>Spin the Choice</em> was invented by Peggy Hill.
+                Follow our progress on <a href="https://github.com/cberes/spin-the-choice">GitHub</a>.
+            </p>
+        </footer>
+    </body>
+</html>
