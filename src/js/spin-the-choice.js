@@ -1,4 +1,4 @@
-/*jslint browser: true*/
+/*jslint browser: true, regexp: true*/
 /*global Audio: false*/
 (function (d) {
     'use strict';
@@ -360,6 +360,14 @@
         };
     }
 
+    function setIntroClosedCookie() {
+        d.cookie = 'intro_closed=true; max-age=2592000'; // 1 month
+    }
+
+    function isIntroClosedCookiePresent() {
+        return d.cookie.replace(/(?:(?:^|.*;\s*)intro_closed\s*\=\s*([^;]*).*$)|^.*$/, "$1") === 'true';
+    }
+
     function initApplication() {
         var bank = new PointBank(0),
             bell = new Audio('assets/sound/bell.ogg'),
@@ -451,25 +459,26 @@
         display.registerCustom('prize-wheel', createGameActionHandler(state, GameAction.PRIZE_WHEEL));
         display.registerCustom('new-game', createGameActionHandler(state, GameAction.GAME_OVER));
 
-        document.getElementById('choose').addEventListener('click', function (evt) {
+        d.getElementById('choose').addEventListener('click', function (evt) {
             game.choose(buttonUpdate, display.update);
             evt.preventDefault();
         });
-        document.getElementById('spin').addEventListener('click', function (evt) {
+        d.getElementById('spin').addEventListener('click', function (evt) {
             game.spin(buttonUpdate, display.update);
             evt.preventDefault();
         });
-        document.getElementById('prize-wheel').addEventListener('click', function (evt) {
+        d.getElementById('prize-wheel').addEventListener('click', function (evt) {
             game.spinPrizeWheel(buttonUpdate, display.update);
             evt.preventDefault();
         });
-        document.getElementById('new-game').addEventListener('click', function (evt) {
+        d.getElementById('new-game').addEventListener('click', function (evt) {
             state.reset();
             display.update();
             evt.preventDefault();
         });
-        document.getElementById('close-intro').addEventListener('click', function (evt) {
-            document.getElementById('intro').hidden = true;
+        d.getElementById('close-intro').addEventListener('click', function (evt) {
+            d.getElementById('intro').hidden = true;
+            setIntroClosedCookie();
             evt.preventDefault();
         });
 
@@ -478,6 +487,7 @@
 
     d.onreadystatechange = function () {
         if (d.readyState === 'interactive') {
+            d.getElementById('intro').hidden = isIntroClosedCookiePresent();
             initApplication();
         }
     };
