@@ -2,14 +2,14 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-  mode: 'development',
+  mode: 'production',
   entry: [
     'babel-polyfill',
     './src/js/main',
     './src/css/main.css'
   ],
   output: {
-      path: '/docs',
+      path: path.join(__dirname, 'docs'),
       publicPath: '/',
       filename: 'bundle.js'
   },
@@ -48,10 +48,5 @@ module.exports = {
   },
   devServer: {
     contentBase: "./src"
-  },
-  plugins: [
-    new webpack.LoaderOptionsPlugin({
-      debug: true
-    })
-  ]
+  }
 };
