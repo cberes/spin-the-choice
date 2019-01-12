@@ -2,5 +2,5 @@
 
 Spin the Choice (invented by Peggy Hill)
 
-Thanks to [Matt Stroka](https://www.instagram.com/rusticturtles/) for recording the bell sound.
+Thanks to [Matt Stroka](http://matthewstroka.com) for help recording the bell sound.
 
