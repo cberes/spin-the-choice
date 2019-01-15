@@ -35,7 +35,7 @@
     "url": "git+https://github.com/cberes/spin-the-choice.git"
   },
   "author": "Corey Beres <corey.beres@gmail.com>",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/cberes/spin-the-choice/issues"
   },
