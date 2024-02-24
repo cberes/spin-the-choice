@@ -23,6 +23,7 @@ jobs:
 
       - name: Build the site
         run: |
+          npm i
           npm run build
           mv docs _site
 
