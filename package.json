@@ -26,7 +26,7 @@
   },
   "scripts": {
     "start": "node_modules/webpack-dev-server/bin/webpack-dev-server.js",
-    "build": "webpack --optimize-minimize && echo -n spinthechoice.com > docs/CNAME && cp src/*.html docs/",
+    "build": "webpack --optimize-minimize && cp src/*.html docs/",
     "lint": "eslint --ext .js src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
