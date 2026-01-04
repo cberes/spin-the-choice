@@ -1,6 +1,6 @@
 'use strict';
 
-import Bell from '../media/bell.ogg';
+import Bell from '../resources/bell.ogg';
 import { Choice } from './choice';
 import Display from './display';
 import { GameAction } from './game-action';
@@ -172,9 +172,5 @@ function initApplication(d) {
     start();
 }
 
-document.onreadystatechange = function () {
-    if (document.readyState === 'interactive') {
-        initHeader(document, 'intro');
-        initApplication(document);
-    }
-};
+initHeader(document, 'intro');
+initApplication(document);

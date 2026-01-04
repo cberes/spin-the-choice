@@ -6,10 +6,15 @@ Thanks to [Matt Stroka](https://strangefrontierart.com/) for help recording the 
 
 # Dependencies
 
-Requires Node 12.x.
+Requires Node.js.
+
+# Development
+
+    npm i
+    npm run dev
 
 # Building
 
-    npm i
+    npm ci
     npm run build
 
